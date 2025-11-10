@@ -20,6 +20,14 @@ Com isso, a solução permite que gestores monitorem a frota em tempo real e **i
 
 ---
 
+🧠 Demonstração em Vídeo
+
+🎥 Assista à explicação completa do projeto no YouTube:
+👉 [👉 Clique aqui para assistir ao vídeo](https://www.youtube.com/watch?v=SEU_LINK_AQUI](https://www.youtube.com/watch?v=6cgH8xzaG-U))
+
+
+---
+
 ## ⚙️ Arquitetura da Solução  
 
 ```
