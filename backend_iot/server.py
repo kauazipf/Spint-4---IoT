@@ -15,7 +15,6 @@ def receber_dados():
 
 @app.route('/')
 def dashboard():
-    # envia o arquivo HTML da pasta static
     return send_from_directory(app.static_folder, 'dashboard.html')
 
 if __name__ == '__main__':

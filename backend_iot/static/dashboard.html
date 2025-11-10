@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard IoT - Mottu Smart Monitor</title>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+  <style>
+    :root {
+      --bg-color: #7491ad;
+      --text-color: #0f172a;
+      --header-bg: #0284c7;
+      --card-bg: #7491ad;
+      --row-even: #7491ad;
+      --accent: #0ea5e9;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: #0f172a;
+        --text-color: #7491ad;
+        --header-bg: #1e293b;
+        --card-bg: #1e293b;
+        --row-even: #334155;
+        --accent: #38bdf8;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Inter", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      background-color: var(--header-bg);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin: 0;
+      color: white;
+    }
+
+    p.subtitle {
+      margin: 5px 0 0;
+      font-size: 0.9rem;
+      color: white;
+    }
+
+    /* Container da tabela com scroll e cabeçalho fixo */
+    .table-container {
+      width: 95%;
+      max-width: 1000px;
+      margin: 20px auto;
+      border-radius: 10px;
+      overflow-y: auto;
+      max-height: 500px; /* 🔥 define a altura do painel rolável */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      background: var(--card-bg);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    thead th {
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      position: sticky;
+      top: 0; /* 🔥 fixa o cabeçalho no topo da área rolável */
+      z-index: 10;
+    }
+
+    tr:nth-child(even) {
+      background-color: var(--row-even);
+    }
+
+    tr:hover {
+      background-color: rgba(14, 165, 233, 0.15);
+      transition: 0.2s;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .em-uso { background: #22c55e; }
+    .parada { background: #eab308; }
+    .manutencao { background: #ef4444; }
+
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #64748b;
+      padding: 15px 0;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .table-container {
+        width: 100%;
+        max-height: 400px;
+      }
+      th, td {
+        padding: 8px;
+        font-size: 0.8rem;
+      }
+      h1 {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>🏍️ Dashboard IoT — Mottu Smart Monitor</h1>
+    <p class="subtitle">Monitoramento em tempo real das motos via Socket.IO</p>
+  </header>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Moto</th>
+          <th>Status</th>
+          <th>Bateria</th>
+          <th>Temp. (°C)</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+        </tr>
+      </thead>
+      <tbody id="dados"></tbody>
+    </table>
+  </div>
+
+  <footer>© 2025 — Mottu Smart Monitor | Sprint 4 — FIAP</footer>
+
+  <script>
+    const socket = io();
+
+    socket.on("connect", () => {
+      console.log("✅ Conectado ao servidor Flask");
+    });
+
+    socket.on("nova_mensagem", (data) => {
+      const tbody = document.getElementById("dados");
+      const row = document.createElement("tr");
+
+      const statusClass =
+        data.status === "em uso"
+          ? "em-uso"
+          : data.status === "parada"
+          ? "parada"
+          : "manutencao";
+
+      row.innerHTML = `
+        <td>${data.moto_id}</td>
+        <td><span class="status ${statusClass}">${data.status}</span></td>
+        <td>${data.bateria}%</td>
+        <td>${data.temperatura_motor}</td>
+        <td>${data.latitude.toFixed(4)}</td>
+        <td>${data.longitude.toFixed(4)}</td>
+      `;
+
+      tbody.prepend(row);
+      while (tbody.children.length > 50) tbody.removeChild(tbody.lastChild);
+    });
+  </script>
+</body>
+</html>
